@@ -6,13 +6,13 @@ type StateProduct = {
     item: IProduct,
     loading: boolean
 }
+
 const initialState: StateProduct = {
     value: [],
     item: { name: "" },
     loading: false
 };
-
-export const fetchProduct = createAsyncThunk("product/fetchProduct", async(id: number) =>{
+export const fetchProduct = createAsyncThunk("product/fetchProduct", async(id: number|string) =>{
     const response = await fetch ("http://localhost:3000/products/"+id);
     const data = await response.json();
     return data
@@ -53,35 +53,38 @@ export const updateProducts = createAsyncThunk("product/update", async(product: 
 
 const productSlice = createSlice({
     name: "product",
-    initialState:{
-       value : [],
-       isLoading: false 
-    },
-
+    initialState,
     reducers: {},
     extraReducers: (builder) =>{
         //get product
         builder.addCase(fetchProducts.pending,(state,action) =>{
-            state.isLoading = true
+            state.loading = true
         })
         builder.addCase(fetchProducts.fulfilled,(state,action) =>{
-            state.isLoading = false
+            state.loading = false
         })
         builder.addCase(fetchProducts.rejected,(state,action) =>{
-            state.isLoading = true
+            state.loading = true
         })
 
         //addproduct
         builder.addCase(addProducts.pending,(state,action) =>{
-            state.isLoading = true
+            state.loading = true
         })
         builder.addCase(addProducts.fulfilled,(state,action) =>{
-            state.value.push(product);
-            state.isLoading = false
+            state.value.push(action.payload);
+            state.loading = false
 
         })
         builder.addCase(addProducts.rejected,(state,action) =>{
-            state.isLoading = true
+            state.loading = true
+        })
+
+        //update
+        builder.addCase(updateProducts.fulfilled, (state, action) => {
+            state.value = state.value.map(item => item.id === action.payload.id ? action.payload : item)
+            state.loading = false;
         })
     }
 })
+export default productSlice.reducer;

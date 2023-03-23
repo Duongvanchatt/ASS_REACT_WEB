@@ -10,7 +10,7 @@ import { RootState } from "../store";
 
 const ProductEdit = () => {
     const {id} = useParams();
-    const {item} = useAppSelector((state: RootState) => state.product);
+    const {value} = useAppSelector((state: RootState) => state.product);
     const {
         register,
         handleSubmit,
@@ -22,7 +22,7 @@ const navigate = useNavigate();
 const dispatch = useAppDispatch();
 
 const onhandleSubmit:SubmitHandler<IProduct> = (data) =>{
-    dispatch(updateProducts({id: item.id, ...data}));
+    dispatch(updateProducts({id: value.id, ...data}));
 };
 
 useEffect (() =>{
@@ -33,7 +33,8 @@ useEffect (() =>{
 return (
     <div>
         <form onSubmit={handleSubmit(onhandleSubmit)}>
-            <input type="text" defaultValue={item.name} {...register("name", {required: true})} />
+            <input type="text" defaultValue={value.name}
+             {...register("name", {required: true})} />
             {errors.name && <span>required</span>}
              <button>Sửa</button>
         </form>
